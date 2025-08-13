@@ -68,10 +68,10 @@ Create a `.env` file in the project root. This file stores sensitive configurati
 #### Example `.env` file
 
 ```env
-# Discord bot token
+# Discord bot token for bot login
 BOT_TOKEN=
 
-# Discord client ID
+# Discord client ID for deploying slash commands
 CLIENT_ID=
 
 # Guild ID for guild-specific developer commands
@@ -79,6 +79,9 @@ GUILD_ID=
 
 # Timezone for console logging (Supports ET, CT, MT, PT - or UTC if not provided)
 TIMEZONE=
+
+# Port for receiving data from the Clerk RuneLite plugin (defaults to 4000 if not provided)
+PORT=
 
 # Wise Old Man API key (optional, for better rates)
 WOM_API_KEY=
