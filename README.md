@@ -69,10 +69,16 @@ Create a `.env` file in the project root. This file stores sensitive configurati
 
 ```env
 # Discord bot token
-DISCORD_TOKEN=
+BOT_TOKEN=
 
 # Discord client ID
-DISCORD_CLIENT_ID=
+CLIENT_ID=
+
+# Guild ID for guild-specific developer commands
+GUILD_ID=
+
+# Timezone for console logging (Supports ET, CT, MT, PT - or UTC if not provided)
+TIMEZONE=
 
 # Wise Old Man API key (optional, for better rates)
 WOM_API_KEY=
