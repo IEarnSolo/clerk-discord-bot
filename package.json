@@ -1,0 +1,27 @@
+{
+  "name": "clerk-discord-bot",
+  "type": "module",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "deploy": "node src/deploy-commands.js",
+    "deploy:dev": "node src/deploy-commands.js --dev",
+    "deploy:clear": "node src/deploy-commands.js --clear",
+    "deploy:dev:clear": "node src/deploy-commands.js --dev --clear"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@discordjs/rest": "^2.4.3",
+    "@wise-old-man/utils": "^3.3.6",
+    "discord.js": "^14.18.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "luxon": "^3.5.0",
+    "sharp": "^0.33.5",
+    "sqlite3": "^5.1.7"
+  }
+}
