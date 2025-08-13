@@ -59,3 +59,24 @@ Clerk is a Discord bot designed for Old School RuneScape (OSRS) clan communities
 git clone https://github.com/yourusername/clerk-discord-bot.git
 cd clerk-discord-bot
 npm install
+```
+
+### 3. Configuration
+
+Create a `.env` file in the project root. This file stores sensitive configuration options for your bot.
+
+#### Example `.env` file
+
+```env
+# Discord bot token
+DISCORD_TOKEN=
+
+# Discord client ID
+DISCORD_CLIENT_ID=
+
+# Wise Old Man API key (optional, for better rates)
+WOM_API_KEY=
+
+# Discord webhook URL for logging (optional)
+LOG_WEBHOOK_URL=
+```
