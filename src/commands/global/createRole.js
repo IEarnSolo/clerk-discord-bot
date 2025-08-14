@@ -28,7 +28,7 @@ export const data = new SlashCommandBuilder()
   );
 
 export async function autocomplete(interaction) {
-  if (interaction.commandName !== 'createrole') return;
+  if (interaction.commandName !== 'create-role') return;
 
   const focused = interaction.options.getFocused();
 
