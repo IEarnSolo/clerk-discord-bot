@@ -103,7 +103,7 @@ export async function execute(interaction) {
       .addFields(
         { name: 'Competition ID', value: `\`\`\`${competitionId}\`\`\`` },
         { name: 'Verification Code', value: `\`\`\`${verificationCode}\`\`\`` },
-        { name: 'Link Command', value: `\`\`\`/linkcomp competitionid:${competitionId}\`\`\`` }
+        { name: 'Link Command', value: `\`\`\`/link-competition competitionid:${competitionId}\`\`\`` }
       )
       .setFooter({ text: `${startDate} ${startTime} ${timezone} - ${endDate} ${endTime} ${timezone}` });
 
