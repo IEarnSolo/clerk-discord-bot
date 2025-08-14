@@ -63,6 +63,7 @@ export async function getEmojiForRank(rankName, client) {
  */
 export async function createRankEmoji(guild, rankName, imagePath) {
   const emojiName = rankName.replace(/[\s-]+/g, '_').slice(0, 32).toLowerCase();
+  await guild.emojis.cache.clear(); 
   await guild.emojis.fetch(); // Refresh emoji cache
 
   let emoji = guild.emojis.cache.find(e => e.name === emojiName);
