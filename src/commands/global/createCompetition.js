@@ -15,13 +15,44 @@ export const data = new SlashCommandBuilder()
   .setName(name)
   .setDescription('Create a WOM competition.')
   .addStringOption(option => option.setName('title').setDescription('Competition title').setRequired(true))
-  .addStringOption(option => option.setName('metric').setDescription('Skill/boss to track').setRequired(true))
+  .addStringOption(option =>
+    option
+      .setName('metric')
+      .setDescription('Skill/boss to track')
+      .setRequired(true)
+      .setAutocomplete(true)
+  )
   .addStringOption(option => option.setName('startdate').setDescription('Start date (MM/DD/YYYY)').setRequired(true))
   .addStringOption(option => option.setName('starttime').setDescription('Start time (e.g., 11:00am)').setRequired(true))
   .addStringOption(option => option.setName('enddate').setDescription('End date (MM/DD/YYYY)').setRequired(true))
   .addStringOption(option => option.setName('endtime').setDescription('End time (e.g., 5:00pm)').setRequired(true))
   .addStringOption(option => option.setName('timezone').setDescription('Timezone (ET, CT, MT, PT) (Defaults to ET if not provided)').setRequired(false))
   .addStringOption(option => option.setName('participants').setDescription('Additional participants (comma-separated)').setRequired(false));
+
+export async function autocomplete(interaction) {
+  const focusedValue = interaction.options.getFocused().toLowerCase();
+
+  try {
+    // Get all metric names from WOM Metric enum
+    const metricNames = Object.keys(Metric);
+
+    // Filter to match the user's input
+    const filtered = metricNames.filter(m =>
+      m.toLowerCase().includes(focusedValue)
+    );
+
+    // Respond with up to 25 choices
+    await interaction.respond(
+      filtered.slice(0, 25).map(name => ({
+        name: name.toLowerCase(),
+        value: name
+      }))
+    );
+  } catch (err) {
+    logError(`Error fetching metric autocomplete: ${err.message}`);
+    await interaction.respond([]);
+  }
+}
 
 export async function execute(interaction) {
   await interaction.deferReply();
