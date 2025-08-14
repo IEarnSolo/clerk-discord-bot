@@ -42,8 +42,8 @@ export async function handle(req, res, client) {
     if (promotionLogChannelId) {
       const channel = guild.channels.cache.get(promotionLogChannelId);
       if (channel) {
-        const oldEmoji = await getEmojiForRank(oldRank, guild);
-        const newEmoji = await getEmojiForRank(newRank, guild);
+        const oldEmoji = await getEmojiForRank(oldRank, client);
+        const newEmoji = await getEmojiForRank(newRank, client);
 
         const embed = {
           color: 0x1d82b6,
