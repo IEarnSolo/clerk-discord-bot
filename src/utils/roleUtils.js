@@ -126,6 +126,27 @@ function findMemberByName(guild, memberName) {
  * cannot be assigned.
  */
 async function assignNewRole(member, newRole, guild, alertChannelId = null) {
+  // Check for dangerous permissions
+  if (
+    newRole.permissions.has('Administrator') ||
+    newRole.permissions.has('KickMembers') ||
+    newRole.permissions.has('BanMembers')
+  ) {
+    const msg = `⚠️ Cannot assign role "${newRole.name}" to ${member.user.username} - the bot is configured to prevent assigning roles with dangerous permissions.`;
+    warn(msg);
+
+    if (alertChannelId) {
+      const alertChannel = guild.channels.cache.get(alertChannelId);
+      if (alertChannel) {
+        alertChannel.send(msg).catch(err =>
+          warn(`⚠️ Failed to send alert message: ${err.message}`)
+        );
+      }
+    }
+    return; // Stop here
+  }
+
+  // Normal assignment flow
   if (!member.roles.cache.has(newRole.id) && !(await isRoleAboveBot(guild, newRole))) {
     await member.roles.add(newRole);
     info(`✅ Assigned role "${newRole.name}" to ${member.user.username}`);
@@ -143,6 +164,7 @@ async function assignNewRole(member, newRole, guild, alertChannelId = null) {
     }
   }
 }
+
 
 /** Removes old rank roles from a member, except for the specified role to keep.
  * @param {GuildMember} member - The guild member to update.
