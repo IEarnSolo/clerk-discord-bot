@@ -130,9 +130,11 @@ async function assignNewRole(member, newRole, guild, alertChannelId = null) {
   if (
     newRole.permissions.has('Administrator') ||
     newRole.permissions.has('KickMembers') ||
-    newRole.permissions.has('BanMembers')
+    newRole.permissions.has('BanMembers') ||
+    newRole.permissions.has('ManageRoles') ||
+    newRole.permissions.has('ManageChannels')
   ) {
-    const msg = `⚠️ Cannot assign role "${newRole.name}" to ${member.user.username} - the bot is configured to prevent assigning roles with dangerous permissions.`;
+    const msg = `⚠️ Cannot assign role "${newRole.name}" to ${member.user.username} - the bot is configured to prevent assigning roles with powerful permissions.`;
     warn(msg);
 
     if (alertChannelId) {
