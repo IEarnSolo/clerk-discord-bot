@@ -92,10 +92,10 @@ export async function execute(interaction) {
         try {
           await womClient.competitions.addParticipants(competitionId, [formattedName], actualVerificationCode);
           addedCount++;
-          await user.send(`You've been added to the competition "${competition.title}".\n${competitionLinkBase}${competitionId}`);
+          await user.send(`You've been added to the competition ${competition.emoji} [${competition.title}](${WOM_COMPETITION_BASE_URL}${competitionId}) ${competition.emoji}`);
         } catch (err) {
           logError(`Error adding participant: ${err.message}`);
-          await user.send(`⚠️ Could not add you to "${competition.title}".`);
+          //await user.send(`⚠️ Could not add you to "${competition.title}".`);
         }
       }
     }

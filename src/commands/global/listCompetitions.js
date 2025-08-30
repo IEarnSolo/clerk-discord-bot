@@ -15,7 +15,7 @@ export async function execute(interaction) {
   await interaction.deferReply();
 
   try {
-    const competitions = await findAllCompetitions();
+    const competitions = await findAllCompetitions(interaction.guildId);
 
     if (!competitions.length) {
       return interaction.editReply('📭 There are currently no competitions linked.');
@@ -30,12 +30,12 @@ export async function execute(interaction) {
       const startDate = `<t:${Math.floor(comp.startsAt / 1000)}:F>`;
       const endDate = `<t:${Math.floor(comp.endsAt / 1000)}:F>`;
       const compLink = `${WOM_COMPETITION_BASE_URL}${comp.competitionId}`;
-      const linkedMsg = comp.messageLink ? `[Jump to Message](${comp.messageLink})` : '*No linked message*';
+      const linkedMsg = comp.messageLink ? `[Jump to message](${comp.messageLink})` : '*No linked message*';
 
       embed.addFields({
         name: '\u200B',
         value:
-            `**[${comp.title}](${compLink})**\n` +
+            `${comp.emoji} **[${comp.title}](${compLink})** ${comp.emoji}\n` +
             `**ID:** \`${comp.competitionId}\`\n` +
             `**Start:** ${startDate}\n` +
             `**End:** ${endDate}\n` +

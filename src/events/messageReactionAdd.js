@@ -4,6 +4,7 @@ import { getCompetitionByMessageLink } from '../services/competitionService.js';
 import { updateCompetitionTimesIfChanged } from '../utils/competitionUtils.js';
 import { womClient } from '../services/womClient.js';
 import { warn, info, error as logError } from '../utils/logger.js';
+import { WOM_COMPETITION_BASE_URL } from '../config.js';
 
 /** Event handler for message reaction add events.
  * Processes reactions added to competition messages to add participants.
@@ -36,9 +37,9 @@ export default {
       return;
     }
 
-    info(`Reaction added by ${user.tag} on ${messageLink} for competition ${competition.competitionId}`);
+    info(`Reaction added by ${user.tag} on ${messageLink} for ${competition.competitionId}`);
 
-    await updateCompetitionTimesIfChanged(competition.competitionId, competition);
+    //await updateCompetitionTimesIfChanged(competition.competitionId, competition);
 
     // Stop if competition ended
     const now = Date.now();
@@ -56,7 +57,7 @@ export default {
 
     const playerName = guildMember.nickname || guildMember.displayName || user.username;
     const formattedName = playerName.replace(/[_-]/g, ' ').toLowerCase();
-    info(`Adding ${formattedName} to competition ${competition.competitionId}`);
+    info(`Adding ${formattedName} to ${competition.title}`);
 
     try {
       await womClient.competitions.addParticipants(
@@ -66,12 +67,12 @@ export default {
       );
       info(`Successfully added ${formattedName} to ${competition.title}`);
       await user.send(
-        `You've been added to the competition "${competition.title}".\nView it here: https://wiseoldman.net/competitions/${competition.competitionId}`
+        `You've been added to the competition ${competition.emoji} [${competition.title}](${WOM_COMPETITION_BASE_URL}${competition.competitionId}) ${competition.emoji}`
       );
     } catch (err) {
       logError(`Error adding participant: ${err.message}`);
       await user.send(
-        `There was an error adding you to "${competition.title}". Please try again later.`
+        `There was an error adding you to the competition ${competition.emoji} [${competition.title}](${WOM_COMPETITION_BASE_URL}${competition.competitionId}) ${competition.emoji}`
       );
     }
   }

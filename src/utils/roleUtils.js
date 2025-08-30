@@ -35,6 +35,9 @@ export async function updateMemberRole(memberName, newRoleName, guild, alertChan
     }
 
     await assignNewRole(member, newRole, guild, alertChannelId);
+
+    member = await guild.members.fetch(member.id);
+
     await removeOldRankRoles(member, guild, newRoleName, alertChannelId);
 }
 

@@ -1,3 +1,4 @@
+// src/services/databaseService.js
 // Centralized SQLite service for Clerk Discord Bot.
 // Handles DB connection, schema creation, and query helpers.
 
@@ -65,16 +66,37 @@ db.serialize(() => {
   // ===============================
   db.run(`
     CREATE TABLE IF NOT EXISTS competitions (
-      competitionId INTEGER PRIMARY KEY,
-      messageLink TEXT,
-      verificationCode TEXT,
-      emoji TEXT,
+      guild_id TEXT,
+      competitionId INTEGER,
+      type TEXT,
       title TEXT,
       metric TEXT,
+      verificationCode TEXT,
       startsAt INTEGER,
-      endsAt INTEGER
+      endsAt INTEGER,
+      messageLink TEXT,
+      emoji TEXT,
+      status INTEGER,
+      starting_hour TEXT,
+      poll_message_id TEXT,
+      tiebreaker_poll_message_id TEXT
     )
   `);
+
+  // ===============================
+// Competition settings table
+// ===============================
+db.run(`
+  CREATE TABLE IF NOT EXISTS competition_settings (
+    guild_id TEXT PRIMARY KEY,
+    clan_events_role_id TEXT,
+    skill_blacklist TEXT,
+    boss_blacklist TEXT,
+    last_chosen_metric TEXT,
+    tiebreaker_poll_duration INTEGER DEFAULT 3,
+    days_after_poll INTEGER DEFAULT 7
+  )
+`);
 
   // ===============================
   // Message configuration table

@@ -100,7 +100,7 @@ export async function createApplicationRankEmojis(client) {
 
     // Skip if emoji with same name already exists
     if (existingNames.has(name)) {
-      info(`⏩ Skipping existing emoji: ${name}`);
+      //info(`⏩ Skipping existing emoji: ${name}`);
       continue;
     }
 

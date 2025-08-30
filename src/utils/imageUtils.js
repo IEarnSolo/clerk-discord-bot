@@ -2,7 +2,7 @@ import sharp from 'sharp';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { info, error as logError } from './logger.js';
+import { fullError, info, error as logError } from './logger.js';
 import { RANK_IMAGES_FOLDER } from '../config.js';
 
 /**
@@ -27,42 +27,45 @@ export async function resizeImage(inputPath, outputPath, width, height) {
     .toFile(outputPath);
 }
 
+const OUTPUT_FOLDER = path.join(RANK_IMAGES_FOLDER, 'resized');
+
 /** Resize all rank images in the assets/rankimages folder.
  * Skips images that are already the target size.
  * @param {number} width - Target width (default 128) 
  * @param {number} height - Target height (default 128)
  */
 export async function resizeRankImages(width = 128, height = 128) {
+  // Ensure output folder exists
+  if (!fs.existsSync(OUTPUT_FOLDER)) {
+    fs.mkdirSync(OUTPUT_FOLDER, { recursive: true });
+  }
+
   const files = fs.readdirSync(RANK_IMAGES_FOLDER)
     .filter(file => file.toLowerCase().endsWith('.png'));
 
   for (const file of files) {
-    const filePath = path.join(RANK_IMAGES_FOLDER, file);
-    const tempPath = path.join(RANK_IMAGES_FOLDER, `temp-${file}`);
+    const inputPath = path.join(RANK_IMAGES_FOLDER, file);
+    const outputPath = path.join(OUTPUT_FOLDER, file);
 
     try {
-      // Get current dimensions
-      const metadata = await sharp(filePath).metadata();
+      const metadata = await sharp(inputPath).metadata();
 
+      // Skip if width OR height already matches
       if (metadata.width === width || metadata.height === height) {
-        info(`⏩ Skipped (already ${metadata.width}x${metadata.height}): ${file}`);
+        //info(`⏩ Skipped (already ${metadata.width}x${metadata.height}): ${file}`);
         continue;
       }
 
-      // Resize into temp file
-      await resizeImage(filePath, tempPath, width, height);
+      await sharp(inputPath)
+        .resize(width, height, {
+          fit: 'inside',
+          kernel: sharp.kernel.nearest,
+        })
+        .toFile(outputPath);
 
-      // Replace original with temp file
-      fs.renameSync(tempPath, filePath);
-
-      info(`✅ Resized: ${file}`);
+      info(`✅ Resized: ${file} → ${outputPath}`);
     } catch (err) {
-      logError(`❌ Failed to resize ${file}:`, err.message);
-
-      // Cleanup if temp file still exists
-      if (fs.existsSync(tempPath)) {
-        fs.unlinkSync(tempPath);
-      }
+      fullError(`❌ Failed to resize ${file}:`, err.message);
     }
   }
 }

@@ -3,6 +3,7 @@ import { getCompetitionByMessageLink } from '../services/competitionService.js';
 import { updateCompetitionTimesIfChanged } from '../utils/competitionUtils.js';
 import { womClient } from '../services/womClient.js';
 import { warn, info, error as logError } from '../utils/logger.js';
+import { WOM_COMPETITION_BASE_URL } from '../config.js';
 
 /**
  * Event handler for message reaction remove events.
@@ -38,7 +39,7 @@ export default {
 
     info(`Reaction removed by ${user.tag} on ${messageLink} for competition ${competition.competitionId}`);
 
-    await updateCompetitionTimesIfChanged(competition.competitionId, competition);
+    //await updateCompetitionTimesIfChanged(competition.competitionId, competition);
 
     const now = Date.now();
     const competitionEnd = Number(competition.endsAt);
@@ -60,7 +61,7 @@ export default {
 
     const playerName = guildMember.nickname || guildMember.displayName || user.username;
     const formattedName = playerName.replace(/[_-]/g, ' ').toLowerCase();
-    info(`Removing ${formattedName} from competition ${competition.competitionId}`);
+    info(`Removing ${formattedName} from competition ${competition.title}`);
 
     try {
       await womClient.competitions.removeParticipants(
@@ -70,7 +71,7 @@ export default {
       );
       info(`Successfully removed ${formattedName} from ${competition.title}`);
       await user.send(
-        `You've been removed from the competition "${competition.title}".\nView it here: https://wiseoldman.net/competitions/${competition.competitionId}`
+        `You've been removed from the competition ${competition.emoji} [${competition.title}](${WOM_COMPETITION_BASE_URL}${competition.competitionId}) ${competition.emoji}`
       );
     } catch (err) {
       logError(`Error removing participant: ${err.message}`);

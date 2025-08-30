@@ -110,3 +110,16 @@ export function error(msg) {
   console.error(`[${formatTimestamp()}] [ERROR] ${msg}`);
   addToBuffer('ERROR', msg);
 }
+
+export function fullError(msg, err) {
+  if (err instanceof Error) {
+    console.error(`[${formatTimestamp()}] [ERROR] ${msg}\n`, err.stack);
+    addToBuffer('ERROR', `${msg} | ${err.stack}`);
+  } else if (err !== undefined) {
+    console.error(`[${formatTimestamp()}] [ERROR] ${msg}`, err);
+    addToBuffer('ERROR', `${msg} | ${JSON.stringify(err)}`);
+  } else {
+    console.error(`[${formatTimestamp()}] [ERROR] ${msg}`);
+    addToBuffer('ERROR', msg);
+  }
+}

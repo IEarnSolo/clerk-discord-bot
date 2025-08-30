@@ -22,10 +22,10 @@ export const data = new SlashCommandBuilder()
       .setRequired(true)
       .setAutocomplete(true)
   )
-  .addStringOption(option => option.setName('startdate').setDescription('Start date (MM/DD/YYYY)').setRequired(true))
-  .addStringOption(option => option.setName('starttime').setDescription('Start time (e.g., 11:00am)').setRequired(true))
-  .addStringOption(option => option.setName('enddate').setDescription('End date (MM/DD/YYYY)').setRequired(true))
-  .addStringOption(option => option.setName('endtime').setDescription('End time (e.g., 5:00pm)').setRequired(true))
+  .addStringOption(option => option.setName('start_date').setDescription('Start date (MM/DD/YYYY)').setRequired(true))
+  .addStringOption(option => option.setName('start_time').setDescription('Start time (e.g., 11:00am)').setRequired(true))
+  .addStringOption(option => option.setName('end_date').setDescription('End date (MM/DD/YYYY)').setRequired(true))
+  .addStringOption(option => option.setName('end_time').setDescription('End time (e.g., 5:00pm)').setRequired(true))
   .addStringOption(option => option.setName('timezone').setDescription('Timezone (ET, CT, MT, PT) (Defaults to ET if not provided)').setRequired(false))
   .addStringOption(option => option.setName('participants').setDescription('Additional participants (comma-separated)').setRequired(false));
 
@@ -59,10 +59,10 @@ export async function execute(interaction) {
 
   const title = interaction.options.getString('title');
   const metricInput = interaction.options.getString('metric').toUpperCase();
-  const startDate = interaction.options.getString('startdate');
-  const startTime = interaction.options.getString('starttime');
-  const endDate = interaction.options.getString('enddate');
-  const endTime = interaction.options.getString('endtime');
+  const startDate = interaction.options.getString('start_date');
+  const startTime = interaction.options.getString('start_time');
+  const endDate = interaction.options.getString('end_date');
+  const endTime = interaction.options.getString('end_time');
   const timezone = interaction.options.getString('timezone') || 'ET';
   const participantsInput = interaction.options.getString('participants') || '';
 
@@ -115,6 +115,7 @@ export async function execute(interaction) {
 
     // Save to DB
     await insertCompetition({
+      guildId: interaction.guildId,
       competitionId,
       messageLink: null, // not linked yet
       verificationCode,
