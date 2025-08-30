@@ -8,7 +8,7 @@ export default {
   data: new SlashCommandBuilder()
     .setName('end-poll')
     .setDescription('Manually end a competition poll')
-    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator) // Admin only
+    //.setDefaultMemberPermissions(PermissionFlagsBits.Administrator) // Admin only
     .addStringOption(option =>
       option.setName('poll_id')
         .setDescription('The ID of the poll message')
