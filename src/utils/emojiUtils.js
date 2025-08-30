@@ -121,3 +121,12 @@ export async function createApplicationRankEmojis(client) {
   }
 }
 
+export let skillsEmoji;
+export let combatEmoji;
+
+export async function loadEmojis(client) {
+  await client.application.emojis.fetch(); 
+
+  skillsEmoji = client.application.emojis.cache.find(e => e.name === "skills")?.toString() || "❓";
+  combatEmoji = client.application.emojis.cache.find(e => e.name === "combat")?.toString() || "❓";
+}

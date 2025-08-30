@@ -18,5 +18,3 @@ export const WOM_COMPETITION_BASE_URL = 'https://wiseoldman.net/competitions/';
 export const TEAM_EMOJI = '✅';
 export const MAIN_COLOR = 0x4860ff; // Blue for embeds
 export const ERROR_COLOR = 0xE74C3C; // Red for error embeds
-export const skillsEmoji = `<:skills:1409448532662026240>`;
-export const combatEmoji = `<:combat:1409837311620812952>`;

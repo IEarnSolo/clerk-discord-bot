@@ -7,7 +7,8 @@ import { insertCompetitionPoll } from '../../services/competitionService.js';
 import { CompetitionStatus } from '../../constants/competitionStatus.js';
 import { buildPollOptions, createCompetitionPoll } from '../../utils/pollUtils.js';
 import { get } from '../../services/databaseService.js';
-import { combatEmoji, MAIN_COLOR, skillsEmoji } from '../../config.js';
+import { MAIN_COLOR } from '../../config.js';
+import { combatEmoji, skillsEmoji } from '../../utils/emojiUtils.js';
 
 export const name = 'host-competition';
 export const description = 'Start an automated Skill/Boss of the Week poll and store its state.';

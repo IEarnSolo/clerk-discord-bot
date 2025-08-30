@@ -10,7 +10,8 @@ import { run, get } from '../../services/databaseService.js';
 import { Metric, MetricProps } from '@wise-old-man/utils';
 import { info, error } from '../../utils/logger.js';
 import { toDisplayName } from '../../utils/pollUtils.js';
-import { combatEmoji, MAIN_COLOR, skillsEmoji } from '../../config.js';
+import { MAIN_COLOR } from '../../config.js';
+import { skillsEmoji, combatEmoji } from '../../utils/emojiUtils.js';
 
 // Grab metric keys for skills and bosses
 const SKILLS = Object.values(Metric).filter(m => MetricProps[m]?.type === 'skill');

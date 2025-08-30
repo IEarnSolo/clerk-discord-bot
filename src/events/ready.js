@@ -2,6 +2,7 @@
 import { info } from '../utils/logger.js';
 import { catchUpPolls } from '../utils/pollUtils.js';
 import { scheduleAllCompetitions } from '../schedulers/competitionScheduler.js';
+import { loadEmojis } from '../utils/emojiUtils.js';
 
 export const name = 'ready';
 export const once = true;
@@ -23,6 +24,7 @@ export async function execute(client) {
             console.error(`Failed to fetch data for guild ${guild.name} (${guild.id}):`, error);
         }
     }
+    await loadEmojis(client);
     await catchUpPolls(client);
     await scheduleAllCompetitions(client)
 }
