@@ -152,13 +152,15 @@ db.run(`
   db.run(`
     CREATE TABLE IF NOT EXISTS message_notes (
       guild_id TEXT,
-      user_id TEXT,
       channel_id TEXT,
       message_id TEXT,
-      timestamp INTEGER,
+      user_id TEXT,
       username TEXT,
       rsn TEXT,
-      note TEXT
+      timestamp INTEGER,
+      note TEXT,
+      added_user_id TEXT,
+      added_username TEXT
     )
   `);
 

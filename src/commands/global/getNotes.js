@@ -1,7 +1,7 @@
 // commands/get-notes.js
-import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
-import { get, all } from '../../services/databaseService.js';
+import { EmbedBuilder, SlashCommandBuilder } from 'discord.js';
 import { MAIN_COLOR } from '../../config.js';
+import { all } from '../../services/databaseService.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -48,11 +48,26 @@ export default {
       return interaction.reply({ content: `❌ No notes found for **${rsn}**.`, ephemeral: true });
     }
 
+    // Try to resolve the "display name" for the embed title if user_id exists
+    let titleName = rsn;
+    const firstNoteWithUserId = notes.find(n => n.user_id);
+    if (firstNoteWithUserId) {
+      try {
+        const member = await interaction.guild.members.fetch(firstNoteWithUserId.user_id).catch(() => null);
+        if (member) {
+          titleName = member.nickname || member.displayName || rsn;
+        }
+      } catch (e) {
+        // fallback to rsn if fetch fails
+        titleName = rsn;
+      }
+    }
+
     const embed = new EmbedBuilder()
-      .setTitle(`Notes for ${rsn}`)
+      .setTitle(`Notes for ${titleName}`)
       .setColor(MAIN_COLOR);
 
-    // Build description with timestamp and jump link
+    // Build description with timestamp, note, added by, and jump link
     embed.setDescription(
       notes.map(note => {
         const timestampSeconds = Math.floor(note.timestamp / 1000);
@@ -60,7 +75,12 @@ export default {
         const jumpLink = note.channel_id && note.message_id
           ? `[Jump to message](https://discord.com/channels/${guildId}/${note.channel_id}/${note.message_id})`
           : '';
-        return `${tsString}: ${note.note} - ${jumpLink}`;
+
+        const addedBy = note.added_user_id
+          ? `(Added by <@${note.added_user_id}>)`
+          : '';
+
+        return `${tsString}: \`${note.note}\` ${addedBy} ${jumpLink}`.trim();
       }).join('\n')
     );
 

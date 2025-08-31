@@ -1,13 +1,14 @@
 import {
-  ContextMenuCommandBuilder,
-  ApplicationCommandType,
-  ModalBuilder,
-  TextInputBuilder,
-  TextInputStyle,
-  ActionRowBuilder,
+    ActionRowBuilder,
+    ApplicationCommandType,
+    ContextMenuCommandBuilder,
+    ModalBuilder,
+    TextInputBuilder,
+    TextInputStyle,
 } from 'discord.js';
 import { WOM_BOT_ID } from '../../config.js';
 import { run } from '../../services/databaseService.js';
+import { info } from '../../utils/logger.js';
 
 // Regex for parsing embed lines
 const lineRegex = /(.+): `(.+)` <.+> -> `(.+)` <.+>/;
@@ -111,7 +112,9 @@ export async function handleAddNoteModal(interaction) {
   const rawMemberNames = interaction.fields.getTextInputValue('memberNames');
   const note = interaction.fields.getTextInputValue('note');
 
-  const memberNames = rawMemberNames.split(',').map(n => n.trim()).filter(Boolean);
+  const memberNames = rawMemberNames.split(',')
+    .map(n => n.trim())
+    .filter(Boolean);
 
   await interaction.deferReply({ ephemeral: true });
 
@@ -142,12 +145,36 @@ export async function handleAddNoteModal(interaction) {
 
     await run(
       `
-      INSERT INTO message_notes (guild_id, user_id, rsn, message_id, channel_id, username, note, timestamp)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO message_notes (
+        guild_id,
+        user_id,
+        rsn,
+        message_id,
+        channel_id,
+        username,
+        note,
+        timestamp,
+        added_user_id,
+        added_username
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
-      [guildId, userId, memberName, messageId, channelId, username, note, Date.now()]
+      [
+        guildId,
+        userId,
+        memberName,
+        messageId,
+        channelId,
+        username,
+        note,
+        Date.now(),
+        interaction.user.id,
+        interaction.user.username
+      ]
     );
+    info(`[Notes] ${interaction.user.username} added a note for ${memberName}: "${note}"`);
   }
 
-  await interaction.editReply({ content: '✅ Notes saved successfully!' });
+
+  await interaction.editReply({ content: '✅ Notes saved successfully! Use \`/get-notes\` to view' });
 }
