@@ -147,6 +147,22 @@ db.run(`
   `);
 
     // ===============================
+  // Message notes table
+  // ===============================
+  db.run(`
+    CREATE TABLE IF NOT EXISTS message_notes (
+      guild_id TEXT,
+      user_id TEXT,
+      channel_id TEXT,
+      message_id TEXT,
+      timestamp INTEGER,
+      username TEXT,
+      rsn TEXT,
+      note TEXT
+    )
+  `);
+
+    // ===============================
   // Welcome message table
   // ===============================
   db.run(`
