@@ -164,7 +164,7 @@ export async function sendWomReminder(comp, announcementsChannel, roleId, type) 
     .setTitle(isStart ? "⏰ Competition Starting Soon" : "⏰ Competition Ending Soon")
     .setDescription(
       `The competition **${comp.title}** will ${isStart ? "start" : "end"} in **30 minutes**!\n\n` +
-      `Please make sure your Wise Old Man profile is updated ${isStart ? "before the competition begins" : "before the competition ends"}.\n\n` +
+      `Please make sure your Wise Old Man profile is updated ${isStart ? "after the competition begins" : "before the competition ends"}.\n\n` +
       `[🔗 View Competition Page](${comp.womUrl})`
     )
     .setTimestamp();
