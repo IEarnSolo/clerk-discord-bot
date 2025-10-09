@@ -173,7 +173,7 @@ export async function sendWomReminder(comp, announcementsChannel, roleId, type) 
     content:
       `<@&${roleId}>\n` +
       `The competition ${comp.emoji} [**${comp.title}**](${WOM_COMPETITION_BASE_URL}${comp.competitionId}) ${comp.emoji} will ${isStart ? "start" : "end"} in **30 minutes**!\n` +
-      `Please make sure to log out and update your Wise Old Man profile ${isStart ? "before the competition begins" : "before the competition ends"}.`,
+      `Please make sure to log out and update your Wise Old Man profile ${isStart ? "after the competition begins" : "before the competition ends"}.`,
     // embeds: [embed], // uncomment if you want embed format instead of plain text
   });
 }
@@ -205,11 +205,29 @@ export async function endCompetition(comp, announcementsChannel, roleId) {
     // Fetch full competition details from WOM API
     const womComp = await womClient.competitions.getCompetitionDetails(comp.competitionId);
 
-    // Extract top 3 winners by gained progress
-    const winners = womComp.participations
-      .filter(p => p.progress && p.progress.gained > 0)
+    // Extract participants who gained progress
+    const participants = womComp.participations.filter(p => p.progress && p.progress.gained > 0);
+
+    // Extract top 3 winners by XP or kills gained
+    const winners = participants
       .sort((a, b) => b.progress.gained - a.progress.gained)
       .slice(0, 3);
+
+    // 🟢 If Skill of the Week, also determine who gained the most levels
+    let mostLevelsSection = "";
+    if (comp.type === "Skill of the Week" && participants.length > 0) {
+      // Find the maximum levels gained (use levels.gained, not progress.levels)
+      const maxLevels = Math.max(0, ...participants.map(p => p.levels?.gained ?? 0));
+
+      // Find all participants who achieved that number of levels
+      const topLevelers = participants.filter(p => (p.levels?.gained ?? 0) === maxLevels);
+
+      if (maxLevels > 0 && topLevelers.length > 0) {
+        const names = topLevelers.map(p => p.player.displayName).join(", ");
+        const plural = topLevelers.length > 1 ? "each gained" : "gained";
+        mostLevelsSection = `\n\n📈 **Most Levels Gained:** ${names} (${plural} ${maxLevels} level${maxLevels !== 1 ? "s" : ""})`;
+      }
+    }
 
     // Build winners message
     let winnersMsg = winners
@@ -230,6 +248,9 @@ export async function endCompetition(comp, announcementsChannel, roleId) {
     if (!winnersMsg) {
       winnersMsg = "No participants gained progress during this competition.";
     }
+
+    // Add the "Most Levels Gained" section if applicable
+    winnersMsg += mostLevelsSection;
 
     // Announce results with content + embed
     if (announcementsChannel) {
@@ -267,7 +288,6 @@ export async function endCompetition(comp, announcementsChannel, roleId) {
         ? row.last_chosen_metric.split(",").map(m => m.trim())
         : [];
 
-      // Avoid duplicate entries (optional, remove if you want duplicates)
       if (!updatedMetrics.includes(comp.metric)) {
         updatedMetrics.push(comp.metric);
       }
@@ -283,6 +303,7 @@ export async function endCompetition(comp, announcementsChannel, roleId) {
     console.error(`Failed to fetch results for competition ${comp.competitionId}:`, err);
   }
 }
+
 
 /**
  * Determine the current competition status based on stored times.
