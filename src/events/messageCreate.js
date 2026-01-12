@@ -5,6 +5,7 @@ import {
     handleMemberJoin,
     handleMemberLeave
 } from '../utils/womMessageUtils.js';
+import { dedupeClanCofferMessages } from '../utils/messageUtils.js';
 
 /** Event handler for message creation events.
  * Processes messages from the WOM bot to handle name changes, rank changes,
@@ -15,6 +16,9 @@ export default {
     name: 'messageCreate',
     once: false,
     async execute(message) {
+
+        if (await dedupeClanCofferMessages(message)) return;
+        
         if (message.author.id !== WOM_BOT_ID) return;
         if (message.embeds.length === 0) return;
 
