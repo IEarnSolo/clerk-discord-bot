@@ -1,7 +1,7 @@
 // utils/messageUtils.js
 import { get } from '../services/databaseService.js';
 
-const DEDUPE_WINDOW_MS = 100;
+const DEDUPE_WINDOW_MS = 500;
 
 // key -> { timestamp, messageId }
 const recentCofferMessages = new Map();
