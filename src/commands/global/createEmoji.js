@@ -1,12 +1,12 @@
+import { EmbedBuilder, SlashCommandBuilder } from "discord.js";
 import fs from "fs";
 import path from "path";
 import {
-  RANK_IMAGES_FOLDER,
-  BOSS_IMAGES,
-  SKILL_IMAGES,
-  MAIN_COLOR
+    BOSS_IMAGES_FOLDER,
+    MAIN_COLOR,
+    RANK_IMAGES_FOLDER,
+    SKILL_IMAGES_FOLDER
 } from "../../config.js"; // adjust if stored elsewhere
-import { EmbedBuilder, SlashCommandBuilder } from "discord.js";
 import { fullError } from "../../utils/logger.js";
 
 function normalizeEmojiName(filename) {
@@ -14,7 +14,7 @@ function normalizeEmojiName(filename) {
 }
 
 function getAllImageFiles() {
-  const folders = [RANK_IMAGES_FOLDER, BOSS_IMAGES, SKILL_IMAGES];
+  const folders = [RANK_IMAGES_FOLDER, BOSS_IMAGES_FOLDER, SKILL_IMAGES_FOLDER];
   let files = [];
 
   for (const folder of folders) {

@@ -1,8 +1,8 @@
 // src/utils/emojiUtils.js
 import fs from 'fs';
 import path from 'path';
-import { info, warn, error as logError } from './logger.js';
-import { RANK_IMAGES_FOLDER } from '../config.js';
+import { BOSS_IMAGES_FOLDER, RANK_IMAGES_FOLDER, SKILL_IMAGES_FOLDER } from '../config.js';
+import { info, error as logError, warn } from './logger.js';
 
 /**
  * Parses a Discord emoji string and returns its name and ID.
@@ -77,47 +77,56 @@ export async function createRankEmoji(guild, rankName, imagePath) {
   return emoji;
 }
 
-/** Upload all PNG images in the emoji assets folder as application emojis.
+/** Upload all PNG images in the emoji assets folders as application emojis.
  * Skips images if an emoji with the same name already exists.
  * Names are derived from filenames by replacing spaces and hyphens with underscores, lowercased.
  * @param {object} client - The Discord client instance
  * @returns {Promise<void>}
  */ 
-export async function createApplicationRankEmojis(client) {
-  // Get list of existing application emojis
+export async function uploadApplicationEmojis(client) {
   const existingEmojis = await client.application.emojis.fetch();
   const existingNames = new Set(existingEmojis.map(e => e.name));
 
-  const files = fs.readdirSync(RANK_IMAGES_FOLDER).filter(f => /\.png$/i.test(f));
+  const folders = [
+    RANK_IMAGES_FOLDER,
+    BOSS_IMAGES_FOLDER,
+    SKILL_IMAGES_FOLDER
+  ];
 
-  for (const filename of files) {
-    // Replace spaces AND hyphens with underscores, lowercased
-    const name = path
-      .parse(filename)
-      .name
-      .replace(/[\s-]+/g, '_') // spaces or hyphens → underscore
-      .toLowerCase();
+  for (const folder of folders) {
+    const files = fs.readdirSync(folder).filter(f => /\.png$/i.test(f));
 
-    // Skip if emoji with same name already exists
-    if (existingNames.has(name)) {
-      //info(`⏩ Skipping existing emoji: ${name}`);
-      continue;
+    for (const filename of files) {
+      const name = path
+        .parse(filename)
+        .name
+        .replace(/[\s-]+/g, '_')
+        .toLowerCase();
+
+      if (existingNames.has(name)) {
+        continue;
+      }
+
+      const filePath = path.join(folder, filename);
+
+      try {
+        await client.application.emojis.create({
+          attachment: filePath,
+          name
+        });
+
+        info(`✅ Uploaded emoji: ${name} (from ${path.basename(folder)})`);
+
+        // 🔹 IMPORTANT: update cache so duplicates across folders don’t upload
+        existingNames.add(name);
+
+      } catch (err) {
+        warn(`❌ Failed to upload emoji '${name}': ${err.message}`);
+      }
+
+      // Delay to avoid rate limits
+      await new Promise(resolve => setTimeout(resolve, 500));
     }
-
-    const filePath = path.join(RANK_IMAGES_FOLDER, filename);
-
-    try {
-      await client.application.emojis.create({
-        attachment: filePath,
-        name
-      });
-      info(`✅ Uploaded application emoji: ${name}`);
-    } catch (err) {
-      warn(`❌ Failed to upload emoji '${name}':`, err.message);
-    }
-
-    // Delay to avoid rate limits
-    await new Promise(resolve => setTimeout(resolve, 500));
   }
 }
 

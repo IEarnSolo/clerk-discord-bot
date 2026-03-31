@@ -7,8 +7,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export const RANK_IMAGES_FOLDER = path.join(__dirname, 'assets', 'rankimages');
-export const BOSS_IMAGES = path.join(__dirname, 'assets', 'bossimages');
-export const SKILL_IMAGES = path.join(__dirname, 'assets', 'skillimages');
+export const BOSS_IMAGES_FOLDER = path.join(__dirname, 'assets', 'bossimages');
+export const SKILL_IMAGES_FOLDER = path.join(__dirname, 'assets', 'skillimages');
 export const BOT_PREFIXES = ['!', '/', '::'];
 export const DEFAULT_PORT = 4000;
 export const WOM_BOT_ID = '719720369241718837';
