@@ -1,5 +1,5 @@
 // src/services/competitionService.js
-import { get, run, all } from '../services/databaseService.js';
+import { all, get, run } from '../services/databaseService.js';
 import { info, error as logError } from '../utils/logger.js';
 
 /**
@@ -143,20 +143,39 @@ export async function getCompetitionsByStatus(status) {
 
 /**
  * Insert a hosted competition row with poll data (for automation tracking).
- * Only stores what we need now: guild_id, type, starting_hour, poll_message_id, status.
+ * Only stores what we need now: guild_id, type, starting_hour, poll_message_id, status, and optional prizes.
  */
 export async function insertCompetitionPoll({
   guild_id,
   type,
   starting_hour,
   poll_message_id,
-  status
+  status,
+  first_place_prize,
+  second_place_prize,
+  third_place_prize,
+  pet_prize,
+  most_levels_prize
 }) {
   await run(
-    `INSERT INTO competitions (guild_id, type, starting_hour, poll_message_id, status)
-     VALUES (?, ?, ?, ?, ?)`,
-    [guild_id, type, starting_hour, poll_message_id, status]
+    `INSERT INTO competitions 
+    (guild_id, type, starting_hour, poll_message_id, status,
+     first_place_prize, second_place_prize, third_place_prize, pet_prize, most_levels_prize)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [
+      guild_id,
+      type,
+      starting_hour,
+      poll_message_id,
+      status,
+      first_place_prize,
+      second_place_prize,
+      third_place_prize,
+      pet_prize,
+      most_levels_prize
+    ]
   );
+
   info(`Inserted hosted competition poll data for guild ${guild_id} (${type})`);
 }
 

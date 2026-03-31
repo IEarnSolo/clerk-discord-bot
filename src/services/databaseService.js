@@ -2,11 +2,10 @@
 // Centralized SQLite service for Clerk Discord Bot.
 // Handles DB connection, schema creation, and query helpers.
 
+import { resolve as _resolve, dirname } from 'path';
 import sqlite3pkg from 'sqlite3';
-import { resolve as _resolve } from 'path';
 import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import { info, error } from '../utils/logger.js';
+import { error, info } from '../utils/logger.js';
 
 // Enable verbose mode
 const sqlite3 = sqlite3pkg.verbose();
@@ -80,6 +79,11 @@ db.serialize(() => {
       starting_hour TEXT,
       poll_message_id TEXT,
       tiebreaker_poll_message_id TEXT
+      first_place_prize TEXT,
+      second_place_prize TEXT,
+      third_place_prize TEXT,
+      pet_prize TEXT,
+      most_levels_prize TEXT
     )
   `);
 

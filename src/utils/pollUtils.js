@@ -325,7 +325,14 @@ export async function processCompetitionPoll(client, comp) {
           comp.type,
           pollWinner,
           competitionSettings?.clan_events_role_id,
-          client
+          client,
+          {
+            first: comp.first_place_prize,
+            second: comp.second_place_prize,
+            third: comp.third_place_prize,
+            pet: comp.pet_prize,
+            mostLevels: comp.most_levels_prize
+          }
         ));
       }
 

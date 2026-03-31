@@ -1,14 +1,14 @@
 // src/utils/competitionUtils.js
-import { womClient } from '../services/womClient.js';
-import { error, fullError, info, warn } from './logger.js';
-import { updateCompetitionTimes } from '../services/competitionService.js';
 import { MetricProps } from '@wise-old-man/utils';
-import { CompetitionStatus } from '../constants/competitionStatus.js';
-import { parseDate } from './timezoneUtils.js';
-import { get, run } from '../services/databaseService.js';
-import { MAIN_COLOR, WOM_COMPETITION_BASE_URL } from '../config.js';
-import { DateTime } from 'luxon';
 import { EmbedBuilder } from "discord.js";
+import { DateTime } from 'luxon';
+import { MAIN_COLOR, WOM_COMPETITION_BASE_URL } from '../config.js';
+import { CompetitionStatus } from '../constants/competitionStatus.js';
+import { updateCompetitionTimes } from '../services/competitionService.js';
+import { get, run } from '../services/databaseService.js';
+import { womClient } from '../services/womClient.js';
+import { fullError, info, warn } from './logger.js';
+import { parseDate } from './timezoneUtils.js';
 
 /** * Updates competition times if they have changed.
  * Fetches the latest competition details from the WOM API
@@ -100,7 +100,8 @@ export async function createCompetitionReactMessage(
   compType,
   pollWinner,
   clanRoleId,
-  client
+  client,
+  prizes = {}
 ) {
     const emojiName = compType === 'Skill of the Week'
     ? `${comp.metricKey}_skill`
@@ -119,8 +120,28 @@ export async function createCompetitionReactMessage(
   // Convert milliseconds to seconds
   const startTimestampSec = Math.floor(comp.startsAt / 1000);
 
+  let prizeLines = [];
+
+  if (prizes.first) prizeLines.push(`🥇 1st Place: ${prizes.first}`);
+  if (prizes.second) prizeLines.push(`🥈 2nd Place: ${prizes.second}`);
+  if (prizes.third) prizeLines.push(`🥉 3rd Place: ${prizes.third}`);
+
+  if (compType === 'Skill of the Week') {
+    if (prizes.pet) prizeLines.push(`🐾 Pet: ${prizes.pet}`);
+    if (prizes.mostLevels) prizeLines.push(`📈 Most Levels Gained: ${prizes.mostLevels}`);
+  }
+
+  const prizeText = prizeLines.length > 0
+    ? `\n\n**🏆 Prizes**\n${prizeLines.join('\n')}`
+    : '';
+
   const announceMsg = await announcementsChannel.send({
-    content: `<@&${clanRoleId}>\n${emojiToReact} The next competition will be [**${comp.title}**](${WOM_COMPETITION_BASE_URL}${comp.competitionId})! ${emojiToReact}\nIt will begin <t:${startTimestampSec}:F>.\nReact to this message to be added into the competition!`,
+    content: `<@&${clanRoleId}>
+${emojiToReact} The next competition will be [**${comp.title}**](${WOM_COMPETITION_BASE_URL}${comp.competitionId})! ${emojiToReact}
+  
+It will begin <t:${startTimestampSec}:F>.${prizeText}
+
+React to this message to be added into the competition!`,
   });
 
   await announceMsg.react(emojiToReact);

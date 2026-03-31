@@ -16,7 +16,7 @@
   "description": "",
   "dependencies": {
     "@discordjs/rest": "^2.4.3",
-    "@wise-old-man/utils": "^3.3.6",
+    "@wise-old-man/utils": "^4.0.14",
     "discord.js": "^14.18.0",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",

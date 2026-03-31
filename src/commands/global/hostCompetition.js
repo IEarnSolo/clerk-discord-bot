@@ -1,14 +1,14 @@
 // src/commands/hostCompetition.js
 import { EmbedBuilder, SlashCommandBuilder } from 'discord.js';
-import { info, warn, error as logError } from '../../utils/logger.js';
-import { getGuildChannel } from '../../services/channelSettingsService.js';
-import { getCompetitionSettings } from '../../services/competitionSettingsService.js';
-import { insertCompetitionPoll } from '../../services/competitionService.js';
-import { CompetitionStatus } from '../../constants/competitionStatus.js';
-import { buildPollOptions, createCompetitionPoll } from '../../utils/pollUtils.js';
-import { get } from '../../services/databaseService.js';
 import { MAIN_COLOR } from '../../config.js';
+import { CompetitionStatus } from '../../constants/competitionStatus.js';
+import { getGuildChannel } from '../../services/channelSettingsService.js';
+import { insertCompetitionPoll } from '../../services/competitionService.js';
+import { getCompetitionSettings } from '../../services/competitionSettingsService.js';
+import { get } from '../../services/databaseService.js';
 import { combatEmoji, skillsEmoji } from '../../utils/emojiUtils.js';
+import { info, error as logError } from '../../utils/logger.js';
+import { buildPollOptions, createCompetitionPoll } from '../../utils/pollUtils.js';
 
 export const name = 'host-competition';
 export const description = 'Start an automated Skill/Boss of the Week poll and store its state.';
@@ -26,13 +26,38 @@ export const data = new SlashCommandBuilder()
   .addStringOption(opt =>
     opt
       .setName('starting_hour')
-      .setDescription('Competition start time (e.g., 2:00pm, 11:35am, 5:30pm)')
+      .setDescription('Competition start time (e.g., 2:00pm, 11:35am, 5:30pm, 10am)')
       .setRequired(true)
   )
   .addIntegerOption(opt =>
     opt
       .setName('poll_days')
       .setDescription('Poll length in days (default 7)')
+      .setRequired(false)
+  )
+  .addStringOption(opt =>
+  opt.setName('first_place_prize')
+    .setDescription('1st place prize (e.g. 10m, 5m + item)')
+    .setRequired(false)
+  )
+  .addStringOption(opt =>
+    opt.setName('second_place_prize')
+      .setDescription('2nd place prize')
+      .setRequired(false)
+  )
+  .addStringOption(opt =>
+    opt.setName('third_place_prize')
+      .setDescription('3rd place prize')
+      .setRequired(false)
+  )
+  .addStringOption(opt =>
+    opt.setName('pet_prize')
+      .setDescription('Prize for obtaining the pet')
+      .setRequired(false)
+  )
+  .addStringOption(opt =>
+    opt.setName('most_levels_prize')
+      .setDescription('Prize for most levels gained (SOTW only)')
       .setRequired(false)
   );
 
@@ -80,6 +105,15 @@ export async function execute(interaction) {
   const type = interaction.options.getString('type'); // 'Skill of the Week' | 'Boss of the Week'
   const startingHourRaw = interaction.options.getString('starting_hour');
   const pollDays = interaction.options.getInteger('poll_days') ?? 7;
+  const firstPlacePrize = interaction.options.getString('first_place_prize');
+  const secondPlacePrize = interaction.options.getString('second_place_prize');
+  const thirdPlacePrize = interaction.options.getString('third_place_prize');
+  const petPrize = interaction.options.getString('pet_prize');
+  const mostLevelsPrize = interaction.options.getString('most_levels_prize');
+
+  if (type !== 'Skill of the Week' && mostLevelsPrize !== null) {
+    return interaction.editReply('❌ The "most levels gained" prize can only be used for Skill of the Week competitions.');
+  }
 
   // Validate starting hour
   const startingHour = normalizeHour(startingHourRaw);
@@ -174,7 +208,12 @@ export async function execute(interaction) {
       type,
       starting_hour: startingHour,
       poll_message_id: pollMessage.id,
-      status: CompetitionStatus.POLL_STARTED
+      status: CompetitionStatus.POLL_STARTED,
+      first_place_prize: firstPlacePrize,
+      second_place_prize: secondPlacePrize,
+      third_place_prize: thirdPlacePrize,
+      pet_prize: petPrize,
+      most_levels_prize: mostLevelsPrize
     });
   } catch (err) {
     logError(`insertCompetitionPoll error: ${err.message}`);
@@ -196,6 +235,25 @@ export async function execute(interaction) {
         inline: false 
       }
     );
+
+  // --- Add prizes if any exist ---
+  const prizeLines = [];
+
+  if (firstPlacePrize) prizeLines.push(`🥇 1st: ${firstPlacePrize}`);
+  if (secondPlacePrize) prizeLines.push(`🥈 2nd: ${secondPlacePrize}`);
+  if (thirdPlacePrize) prizeLines.push(`🥉 3rd: ${thirdPlacePrize}`);
+  if (petPrize) prizeLines.push(`🐾 Pet: ${petPrize}`);
+  if (mostLevelsPrize && type === 'Skill of the Week') {
+    prizeLines.push(`📈 Most Levels: ${mostLevelsPrize}`);
+  }
+
+  if (prizeLines.length > 0) {
+    embed.addFields({
+      name: 'Prizes',
+      value: prizeLines.join('\n'),
+      inline: false
+    });
+  }
 
   return interaction.editReply({ embeds: [embed] });
 }
