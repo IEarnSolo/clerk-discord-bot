@@ -11,7 +11,7 @@ import { info, error as logError } from '../../utils/logger.js';
 import { buildPollOptions, createCompetitionPoll } from '../../utils/pollUtils.js';
 
 export const name = 'host-competition';
-export const description = 'Start an automated Skill/Boss of the Week poll and store its state.';
+export const description = 'Start an automated Skill/Boss of the Week poll and host a competition.';
 
 export const data = new SlashCommandBuilder()
   .setName('host-competition')
@@ -28,12 +28,6 @@ export const data = new SlashCommandBuilder()
       .setName('starting_hour')
       .setDescription('Competition start time (e.g., 2:00pm, 11:35am, 5:30pm, 10am)')
       .setRequired(true)
-  )
-  .addIntegerOption(opt =>
-    opt
-      .setName('poll_days')
-      .setDescription('Poll length in days (default 7)')
-      .setRequired(false)
   )
   .addStringOption(opt =>
   opt.setName('first_place_prize')
@@ -58,6 +52,12 @@ export const data = new SlashCommandBuilder()
   .addStringOption(opt =>
     opt.setName('most_levels_prize')
       .setDescription('Prize for most levels gained (SOTW only)')
+      .setRequired(false)
+  )
+  .addIntegerOption(opt =>
+    opt
+      .setName('poll_days')
+      .setDescription('Poll length in days (default 7)')
       .setRequired(false)
   );
 
